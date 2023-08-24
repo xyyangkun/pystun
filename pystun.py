@@ -1,19 +1,42 @@
+#
 import binascii
 import random
 import colorlog
 import socket
 
-
 __version__ = '0.1.1'
 
 # log = logging.getLogger("pystun")
 
-log = colorlog.getLogger()
-log.setLevel(colorlog.colorlog.logging.DEBUG)
-handler = colorlog.StreamHandler()
-handler.setFormatter(colorlog.ColoredFormatter())
-log.addHandler(handler)
+# log = colorlog.getLogger()
+# log.setLevel(colorlog.colorlog.logging.DEBUG)
+# handler = colorlog.StreamHandler()
+# handler.setFormatter(colorlog.ColoredFormatter())
+# log.addHandler(handler)
 
+from colorlog import ColoredFormatter
+
+formatter = ColoredFormatter(
+    "%(log_color)s%(levelname)-8s%(reset)s %(blue)s%(message)s",
+    datefmt=None,
+    reset=True,
+    log_colors={
+        'DEBUG': 'cyan',
+        'INFO': 'green',
+        'WARNING': 'yellow',
+        'ERROR': 'red',
+        'CRITICAL': 'red,bg_white',
+    },
+    secondary_log_colors={},
+    style='%'
+)
+
+handler = colorlog.StreamHandler()
+handler.setFormatter(formatter)
+
+log = colorlog.getLogger('pystun')
+log.setLevel('DEBUG')
+log.addHandler(handler)
 
 STUN_SERVERS = (
     'stun.sipgate.net',
@@ -24,16 +47,13 @@ STUN_SERVERS = (
     'stun.voipbuster.com'
 )
 
-
 stun_servers_list = STUN_SERVERS
-
 
 DEFAULTS = {
     'stun_port': 3478,
     'source_ip': '0.0.0.0',
     'source_port': 54320
 }
-
 
 # STUN attributes
 MappedAddress = '0001'
@@ -52,7 +72,6 @@ XorMappedAddress = '8020'
 ServerName = '8022'
 SecondaryAddress = '8050'  # Non standard extension
 
-
 # types for a STUN message
 BindRequestMsg = '0001'
 BindResponseMsg = '0101'
@@ -60,7 +79,6 @@ BindErrorResponseMsg = '0111'
 SharedSecretRequestMsg = '0002'
 SharedSecretResponseMsg = '0102'
 SharedSecretErrorResponseMsg = '0112'
-
 
 dictAttrToVal = {'MappedAddress': MappedAddress,
                  'ResponseAddress': ResponseAddress,
@@ -207,7 +225,7 @@ def stun_test(sock, host, port, source_ip, source_port, send_data=''):
                     retVal['ChangedIP'] = ip
                     retVal['ChangedPort'] = port
                 # if attr_type == ServerName:
-                    # serverName = buf[(base+4):(base+4+attr_len)]
+                # serverName = buf[(base+4):(base+4+attr_len)]
                 base = base + 4 + attr_len
                 len_remain = len_remain - (4 + attr_len)
     # s.close()
@@ -291,4 +309,7 @@ def get_ip_info(source_ip="0.0.0.0", source_port=54320, stun_host=None,
     return nat_type, external_ip, external_port
 
 
-print(get_ip_info(stun_host='stun.sipgate.net'))
+print("test:")
+# print(get_ip_info(stun_host='stun.sipgate.net'))
+# stun.qq.com  stun.syncthing.net stun.miwifi.com stun.bige0.com  stun.stunprotocol.org
+print(get_ip_info(stun_host='stun.syncthing.net'))
